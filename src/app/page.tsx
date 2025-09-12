@@ -10,7 +10,7 @@ import {
   SummaryCards,
   CategoryChart,
 } from '@/components';
-import { ExportButton } from '@/components/ExportButton';
+import { AdvancedExportModal } from '@/components/AdvancedExportModal';
 
 export default function Home() {
   const {
@@ -25,6 +25,7 @@ export default function Home() {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [filters, setFilters] = useState<ExpenseFilters>({});
   const [showForm, setShowForm] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const filteredExpenses = getFilteredExpenses(filters);
   const summary = getSummary();
@@ -71,7 +72,12 @@ export default function Home() {
               </p>
             </div>
             <div className="flex space-x-3">
-              <ExportButton expenses={filteredExpenses} />
+              <button
+                onClick={() => setShowExportModal(true)}
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+              >
+                🚀 Advanced Export
+              </button>
               <button
                 onClick={() => setShowForm(!showForm)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
@@ -138,6 +144,13 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Advanced Export Modal */}
+      <AdvancedExportModal
+        expenses={filteredExpenses}
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+      />
     </div>
   );
 }
