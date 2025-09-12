@@ -10,7 +10,7 @@ import {
   SummaryCards,
   CategoryChart,
 } from '@/components';
-import { ExportButton } from '@/components/ExportButton';
+import { CloudExportDashboard } from '@/components/CloudExportDashboard';
 
 export default function Home() {
   const {
@@ -25,6 +25,7 @@ export default function Home() {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [filters, setFilters] = useState<ExpenseFilters>({});
   const [showForm, setShowForm] = useState(false);
+  const [showCloudExportDashboard, setShowCloudExportDashboard] = useState(false);
 
   const filteredExpenses = getFilteredExpenses(filters);
   const summary = getSummary();
@@ -71,7 +72,12 @@ export default function Home() {
               </p>
             </div>
             <div className="flex space-x-3">
-              <ExportButton expenses={filteredExpenses} />
+              <button
+                onClick={() => setShowCloudExportDashboard(true)}
+                className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-md hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all shadow-lg"
+              >
+                ☁️ Cloud Export Hub
+              </button>
               <button
                 onClick={() => setShowForm(!showForm)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
@@ -138,6 +144,13 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Cloud Export Dashboard */}
+      <CloudExportDashboard
+        expenses={filteredExpenses}
+        isOpen={showCloudExportDashboard}
+        onClose={() => setShowCloudExportDashboard(false)}
+      />
     </div>
   );
 }
