@@ -1,9 +1,9 @@
-[Original prompt for code analysis](https://www.coursera.org/learn/claude-code/supplement/Pagju/exercise-ai-evaluation-of-code-feature-implementations)
-
+# Code Analysis Prompt
 
 I have three different implementations of data export functionality across three git branches in my expense tracker application. I want to create a systematic evaluation framework to compare them thoroughly.
 
 BACKGROUND:
+
 - feature-data-export-v1: Simple CSV export (one-button approach)
 - feature-data-export-v2: Advanced export with multiple formats and filtering options
 - feature-data-export-v3: Cloud integration with sharing and collaboration features
@@ -25,6 +25,7 @@ DOCUMENTATION:
 Create a file called "code-analysis.md" with detailed findings for each version:
 
 **For Each Version, Document:**
+
 - Files created/modified (list them)
 - Code architecture overview (how is it organized?)
 - Key components and their responsibilities
@@ -37,6 +38,7 @@ Create a file called "code-analysis.md" with detailed findings for each version:
 - Extensibility and maintainability factors
 
 **Technical Deep Dive:**
+
 - How does the export functionality work technically?
 - What file generation approach is used?
 - How is user interaction handled?
@@ -44,3 +46,6 @@ Create a file called "code-analysis.md" with detailed findings for each version:
 - How are edge cases handled?
 
 Be thorough and technical - this analysis will inform our decision about which approach to adopt or how to combine them.
+
+**Attribution**
+[Original prompt for code analysis](https://www.coursera.org/learn/claude-code/supplement/Pagju/exercise-ai-evaluation-of-code-feature-implementations).
