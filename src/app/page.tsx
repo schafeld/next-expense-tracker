@@ -73,6 +73,12 @@ export default function Home() {
             </div>
             <div className="flex space-x-3">
               <ExportButton expenses={filteredExpenses} />
+              <a
+                href="/top-categories"
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+              >
+                📊 Top Categories
+              </a>
               <button
                 onClick={() => setShowForm(!showForm)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
