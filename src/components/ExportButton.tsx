@@ -1,7 +1,7 @@
 'use client';
 
 import { Expense } from '@/types';
-import { exportToCSV, downloadCSV } from '@/lib/utils';
+import { exportToCSV, downloadCSV, exportToPDF } from '@/lib/utils';
 
 interface ExportButtonProps {
   expenses: Expense[];
@@ -12,7 +12,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
   expenses,
   disabled = false
 }) => {
-  const handleExport = () => {
+  const handleCSVExport = () => {
     if (expenses.length === 0) {
       alert('No expenses to export');
       return;
@@ -23,14 +23,36 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
     downloadCSV(csvContent, filename);
   };
 
+  const handlePDFExport = () => {
+    if (expenses.length === 0) {
+      alert('No expenses to export');
+      return;
+    }
+
+    exportToPDF(expenses);
+  };
+
+  const isDisabled = disabled || expenses.length === 0;
+  const buttonClasses = "px-4 py-2 rounded-md focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-white";
+
   return (
-    <button
-      onClick={handleExport}
-      disabled={disabled || expenses.length === 0}
-      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      title={expenses.length === 0 ? 'No expenses to export' : 'Export to CSV'}
-    >
-      📊 Export CSV
-    </button>
+    <div className="flex gap-2">
+      <button
+        onClick={handleCSVExport}
+        disabled={isDisabled}
+        className={`${buttonClasses} bg-green-600 hover:bg-green-700 focus:ring-green-500`}
+        title={expenses.length === 0 ? 'No expenses to export' : 'Export to CSV'}
+      >
+        📊 Export CSV
+      </button>
+      <button
+        onClick={handlePDFExport}
+        disabled={isDisabled}
+        className={`${buttonClasses} bg-blue-600 hover:bg-blue-700 focus:ring-blue-500`}
+        title={expenses.length === 0 ? 'No expenses to export' : 'Export to PDF'}
+      >
+        📄 Export PDF
+      </button>
+    </div>
   );
 };

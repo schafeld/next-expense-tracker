@@ -1,6 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Expense, ExpenseCategory, ExpenseFilters, ExpenseSummary } from '@/types';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -102,4 +104,48 @@ export const downloadCSV = (csvContent: string, filename: string): void => {
   link.download = filename;
   link.click();
   window.URL.revokeObjectURL(url);
+};
+
+export const exportToPDF = (expenses: Expense[]): void => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text('Expense Report', 14, 22);
+
+  doc.setFontSize(12);
+  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 35);
+
+  const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  doc.text(`Total Expenses: ${formatCurrency(totalAmount)}`, 14, 42);
+
+  const tableData = expenses.map(expense => [
+    formatDate(expense.date),
+    expense.description,
+    expense.category,
+    formatCurrency(expense.amount)
+  ]);
+
+  autoTable(doc, {
+    head: [['Date', 'Description', 'Category', 'Amount']],
+    body: tableData,
+    startY: 50,
+    styles: {
+      fontSize: 10,
+      cellPadding: 3,
+    },
+    headStyles: {
+      fillColor: [59, 130, 246],
+      textColor: 255,
+      fontStyle: 'bold',
+    },
+    columnStyles: {
+      0: { cellWidth: 30 },
+      1: { cellWidth: 60 },
+      2: { cellWidth: 30 },
+      3: { cellWidth: 30, halign: 'right' },
+    },
+  });
+
+  const filename = `expenses-${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(filename);
 };
