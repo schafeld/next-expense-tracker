@@ -180,3 +180,74 @@ export const exportToPDF = (expenses: Expense[]): void => {
   const filename = `expenses-${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(filename);
 };
+
+export interface TopExpenseCategory {
+  category: ExpenseCategory;
+  totalAmount: number;
+  expenseCount: number;
+  percentage: number;
+  averageExpenseAmount: number;
+}
+
+export const calculateTopExpenseCategories = (
+  expenses: Expense[],
+  limit: number = 6
+): TopExpenseCategory[] => {
+  if (expenses.length === 0) {
+    return [];
+  }
+
+  const totalSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+  // Group expenses by category
+  const categoryData = expenses.reduce((acc, expense) => {
+    if (!acc[expense.category]) {
+      acc[expense.category] = {
+        totalAmount: 0,
+        expenseCount: 0,
+        expenses: []
+      };
+    }
+    acc[expense.category].totalAmount += expense.amount;
+    acc[expense.category].expenseCount += 1;
+    acc[expense.category].expenses.push(expense);
+    return acc;
+  }, {} as Record<ExpenseCategory, {
+    totalAmount: number;
+    expenseCount: number;
+    expenses: Expense[];
+  }>);
+
+  // Convert to TopExpenseCategory format and sort by total amount
+  const topCategories = Object.entries(categoryData)
+    .map(([category, data]) => ({
+      category: category as ExpenseCategory,
+      totalAmount: data.totalAmount,
+      expenseCount: data.expenseCount,
+      percentage: totalSpent > 0 ? (data.totalAmount / totalSpent) * 100 : 0,
+      averageExpenseAmount: data.expenseCount > 0 ? data.totalAmount / data.expenseCount : 0,
+    }))
+    .sort((a, b) => b.totalAmount - a.totalAmount)
+    .slice(0, limit);
+
+  return topCategories;
+};
+
+export const calculateTopExpenseCategoriesWithTimeRange = (
+  expenses: Expense[],
+  startDate?: string,
+  endDate?: string,
+  limit: number = 6
+): TopExpenseCategory[] => {
+  let filteredExpenses = expenses;
+
+  if (startDate || endDate) {
+    filteredExpenses = expenses.filter(expense => {
+      const expenseDate = expense.date;
+      return (!startDate || expenseDate >= startDate) &&
+             (!endDate || expenseDate <= endDate);
+    });
+  }
+
+  return calculateTopExpenseCategories(filteredExpenses, limit);
+};
