@@ -1,6 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Expense, ExpenseCategory, ExpenseFilters, ExpenseSummary } from '@/types';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -48,13 +50,13 @@ export const calculateSummary = (expenses: Expense[]): ExpenseSummary => {
   const currentYear = now.getFullYear();
 
   const totalSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-  
+
   const monthlyExpenses = expenses.filter(expense => {
     const expenseDate = new Date(expense.date);
-    return expenseDate.getMonth() === currentMonth && 
+    return expenseDate.getMonth() === currentMonth &&
            expenseDate.getFullYear() === currentYear;
   });
-  
+
   const monthlySpent = monthlyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
   const categoryTotals = expenses.reduce((acc, expense) => {
@@ -68,7 +70,7 @@ export const calculateSummary = (expenses: Expense[]): ExpenseSummary => {
     percentage: totalSpent > 0 ? (amount / totalSpent) * 100 : 0,
   })).sort((a, b) => b.amount - a.amount);
 
-  const topCategory = categoryBreakdown.length > 0 
+  const topCategory = categoryBreakdown.length > 0
     ? { name: categoryBreakdown[0].category, amount: categoryBreakdown[0].amount }
     : null;
 
@@ -78,6 +80,37 @@ export const calculateSummary = (expenses: Expense[]): ExpenseSummary => {
     topCategory,
     categoryBreakdown,
   };
+};
+
+export const calculateMonthlySpent = (expenses: Expense[], targetMonth: number, targetYear: number): number => {
+  const monthlyExpenses = expenses.filter(expense => {
+    const expenseDate = new Date(expense.date);
+    return expenseDate.getMonth() === targetMonth &&
+           expenseDate.getFullYear() === targetYear;
+  });
+
+  return monthlyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+};
+
+export const getAvailableMonths = (expenses: Expense[]): Array<{month: number, year: number, monthName: string}> => {
+  const monthSet = new Set<string>();
+
+  expenses.forEach(expense => {
+    const expenseDate = new Date(expense.date);
+    const monthYear = `${expenseDate.getFullYear()}-${expenseDate.getMonth()}`;
+    monthSet.add(monthYear);
+  });
+
+  const months = Array.from(monthSet).map(monthYear => {
+    const [year, month] = monthYear.split('-').map(Number);
+    const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(year, month));
+    return { month, year, monthName };
+  }).sort((a, b) => {
+    if (a.year !== b.year) return b.year - a.year;
+    return b.month - a.month;
+  });
+
+  return months;
 };
 
 export const exportToCSV = (expenses: Expense[]): string => {
@@ -102,4 +135,48 @@ export const downloadCSV = (csvContent: string, filename: string): void => {
   link.download = filename;
   link.click();
   window.URL.revokeObjectURL(url);
+};
+
+export const exportToPDF = (expenses: Expense[]): void => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text('Expense Report', 14, 22);
+
+  doc.setFontSize(12);
+  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 35);
+
+  const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  doc.text(`Total Expenses: ${formatCurrency(totalAmount)}`, 14, 42);
+
+  const tableData = expenses.map(expense => [
+    formatDate(expense.date),
+    expense.description,
+    expense.category,
+    formatCurrency(expense.amount)
+  ]);
+
+  autoTable(doc, {
+    head: [['Date', 'Description', 'Category', 'Amount']],
+    body: tableData,
+    startY: 50,
+    styles: {
+      fontSize: 10,
+      cellPadding: 3,
+    },
+    headStyles: {
+      fillColor: [59, 130, 246],
+      textColor: 255,
+      fontStyle: 'bold',
+    },
+    columnStyles: {
+      0: { cellWidth: 30 },
+      1: { cellWidth: 60 },
+      2: { cellWidth: 30 },
+      3: { cellWidth: 30, halign: 'right' },
+    },
+  });
+
+  const filename = `expenses-${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(filename);
 };
