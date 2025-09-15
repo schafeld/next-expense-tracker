@@ -48,13 +48,13 @@ export const calculateSummary = (expenses: Expense[]): ExpenseSummary => {
   const currentYear = now.getFullYear();
 
   const totalSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-  
+
   const monthlyExpenses = expenses.filter(expense => {
     const expenseDate = new Date(expense.date);
-    return expenseDate.getMonth() === currentMonth && 
+    return expenseDate.getMonth() === currentMonth &&
            expenseDate.getFullYear() === currentYear;
   });
-  
+
   const monthlySpent = monthlyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
   const categoryTotals = expenses.reduce((acc, expense) => {
@@ -68,7 +68,7 @@ export const calculateSummary = (expenses: Expense[]): ExpenseSummary => {
     percentage: totalSpent > 0 ? (amount / totalSpent) * 100 : 0,
   })).sort((a, b) => b.amount - a.amount);
 
-  const topCategory = categoryBreakdown.length > 0 
+  const topCategory = categoryBreakdown.length > 0
     ? { name: categoryBreakdown[0].category, amount: categoryBreakdown[0].amount }
     : null;
 
@@ -78,6 +78,37 @@ export const calculateSummary = (expenses: Expense[]): ExpenseSummary => {
     topCategory,
     categoryBreakdown,
   };
+};
+
+export const calculateMonthlySpent = (expenses: Expense[], targetMonth: number, targetYear: number): number => {
+  const monthlyExpenses = expenses.filter(expense => {
+    const expenseDate = new Date(expense.date);
+    return expenseDate.getMonth() === targetMonth &&
+           expenseDate.getFullYear() === targetYear;
+  });
+
+  return monthlyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+};
+
+export const getAvailableMonths = (expenses: Expense[]): Array<{month: number, year: number, monthName: string}> => {
+  const monthSet = new Set<string>();
+
+  expenses.forEach(expense => {
+    const expenseDate = new Date(expense.date);
+    const monthYear = `${expenseDate.getFullYear()}-${expenseDate.getMonth()}`;
+    monthSet.add(monthYear);
+  });
+
+  const months = Array.from(monthSet).map(monthYear => {
+    const [year, month] = monthYear.split('-').map(Number);
+    const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(year, month));
+    return { month, year, monthName };
+  }).sort((a, b) => {
+    if (a.year !== b.year) return b.year - a.year;
+    return b.month - a.month;
+  });
+
+  return months;
 };
 
 export const exportToCSV = (expenses: Expense[]): string => {

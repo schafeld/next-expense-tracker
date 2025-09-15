@@ -14,6 +14,7 @@ import { ExportButton } from '@/components/ExportButton';
 
 export default function Home() {
   const {
+    expenses,
     isLoading,
     addExpense,
     updateExpense,
@@ -85,7 +86,7 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Summary Cards */}
-        <SummaryCards summary={summary} isLoading={isLoading} />
+        <SummaryCards summary={summary} expenses={expenses} isLoading={isLoading} />
 
         {/* Add Expense Form */}
         {showForm && (
