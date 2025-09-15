@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Vendor, VendorFilters, ExpenseCategory } from '@/types';
 import { formatCurrency, formatDate, downloadCSV, exportVendorsToCSV } from '@/lib/utils';
 
@@ -272,8 +272,8 @@ export const TopVendorsList: React.FC<TopVendorsListProps> = ({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {sortedVendors.map((vendor, index) => (
-                <>
-                  <tr key={vendor.name} className="hover:bg-gray-50">
+                <React.Fragment key={vendor.name}>
+                  <tr className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full text-sm font-semibold mr-3">
@@ -361,7 +361,7 @@ export const TopVendorsList: React.FC<TopVendorsListProps> = ({
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
