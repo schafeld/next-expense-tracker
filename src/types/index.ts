@@ -5,3 +5,10 @@ export type {
   ExpenseFilters,
   ExpenseSummary,
 } from './expense';
+
+export type {
+  Vendor,
+  VendorSummary,
+  VendorFilters,
+  VendorChartData,
+} from './vendor';

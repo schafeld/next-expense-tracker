@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { Expense, ExpenseFormData, ExpenseFilters } from '@/types';
 import { useExpenses } from '@/hooks/useExpenses';
 import {
@@ -11,6 +12,8 @@ import {
   CategoryChart,
 } from '@/components';
 import { ExportButton } from '@/components/ExportButton';
+import { TopVendorsCard } from '@/components/TopVendorsCard';
+import { groupExpensesByVendor } from '@/lib/utils';
 
 export default function Home() {
   const {
@@ -29,6 +32,11 @@ export default function Home() {
 
   const filteredExpenses = getFilteredExpenses(filters);
   const summary = getSummary();
+
+  // Process vendor data for the TopVendorsCard
+  const vendors = useMemo(() => {
+    return groupExpensesByVendor(expenses);
+  }, [expenses]);
 
   const handleAddExpense = (formData: ExpenseFormData) => {
     addExpense(formData);
@@ -73,6 +81,12 @@ export default function Home() {
             </div>
             <div className="flex space-x-3">
               <ExportButton expenses={filteredExpenses} />
+              <Link
+                href="/top-vendors"
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+              >
+                🏪 Top Vendors
+              </Link>
               <button
                 onClick={() => setShowForm(!showForm)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
@@ -136,6 +150,7 @@ export default function Home() {
           {/* Sidebar */}
           <div className="space-y-6">
             <CategoryChart summary={summary} isLoading={isLoading} />
+            <TopVendorsCard vendors={vendors} isLoading={isLoading} />
           </div>
         </div>
       </div>

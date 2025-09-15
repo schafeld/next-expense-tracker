@@ -180,3 +180,14 @@ export const exportToPDF = (expenses: Expense[]): void => {
   const filename = `expenses-${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(filename);
 };
+
+// Re-export vendor utilities for convenience
+export {
+  extractVendorName,
+  groupExpensesByVendor,
+  filterVendors,
+  calculateVendorSummary,
+  generateVendorChartData,
+  getVendorTrends,
+  exportVendorsToCSV,
+} from './vendorUtils';

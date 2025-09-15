@@ -23,6 +23,7 @@ export const useExpenses = () => {
       description: formData.description,
       category: formData.category,
       date: formData.date,
+      vendor: formData.vendor && formData.vendor.trim() ? formData.vendor.trim() : undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -33,14 +34,15 @@ export const useExpenses = () => {
   };
 
   const updateExpense = (id: string, formData: ExpenseFormData): void => {
-    const updatedExpenses = expenses.map(expense => 
-      expense.id === id 
+    const updatedExpenses = expenses.map(expense =>
+      expense.id === id
         ? {
             ...expense,
             amount: parseFloat(formData.amount),
             description: formData.description,
             category: formData.category,
             date: formData.date,
+            vendor: formData.vendor && formData.vendor.trim() ? formData.vendor.trim() : undefined,
             updatedAt: new Date().toISOString(),
           }
         : expense
