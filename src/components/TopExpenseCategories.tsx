@@ -152,8 +152,9 @@ export const TopExpenseCategories: React.FC<TopExpenseCategoriesProps> = ({
           {selectedPeriod === 'custom' && (
             <div className="flex flex-wrap gap-4 mt-3">
               <div>
-                <label className="block text-xs text-gray-600 mb-1">Start Date</label>
+                <label htmlFor="custom-start-date" className="block text-xs text-gray-600 mb-1">Start Date</label>
                 <input
+                  id="custom-start-date"
                   type="date"
                   value={customStartDate}
                   onChange={(e) => setCustomStartDate(e.target.value)}
@@ -161,8 +162,9 @@ export const TopExpenseCategories: React.FC<TopExpenseCategoriesProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-600 mb-1">End Date</label>
+                <label htmlFor="custom-end-date" className="block text-xs text-gray-600 mb-1">End Date</label>
                 <input
+                  id="custom-end-date"
                   type="date"
                   value={customEndDate}
                   onChange={(e) => setCustomEndDate(e.target.value)}

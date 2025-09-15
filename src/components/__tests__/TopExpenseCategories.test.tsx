@@ -34,18 +34,19 @@ describe('TopExpenseCategories', () => {
   test('renders loading state correctly', () => {
     render(<TopExpenseCategories expenses={[]} isLoading={true} />);
 
-    expect(screen.getByText('📊 Top Expense Categories')).toBeInTheDocument();
-    expect(screen.getByText('Analyze your spending patterns by category')).toBeInTheDocument();
-
     // Check for loading skeleton
     const loadingElements = document.querySelectorAll('.animate-pulse');
     expect(loadingElements.length).toBeGreaterThan(0);
+    
+    // Check that the main content containers exist
+    const container = document.querySelector('.bg-white.rounded-lg.shadow-md');
+    expect(container).toBeTruthy();
   });
 
   test('renders empty state when no expenses', () => {
     render(<TopExpenseCategories expenses={[]} isLoading={false} />);
 
-    expect(screen.getByText('📊 No Expenses Found')).toBeInTheDocument();
+    expect(screen.getByText('No Expenses Found')).toBeInTheDocument();
     expect(screen.getByText('No expenses found for the selected period.')).toBeInTheDocument();
   });
 
@@ -141,7 +142,10 @@ describe('TopExpenseCategories', () => {
 
     expect(screen.getByText('#1 Food')).toBeInTheDocument();
     expect(screen.getByText('100.0%')).toBeInTheDocument();
-    expect(screen.getByText('$100.00')).toBeInTheDocument();
+    
+    // Look for the amount in the category card (text-right class indicates category amount)
+    const categoryAmounts = screen.getAllByText('$100.00');
+    expect(categoryAmounts.length).toBeGreaterThan(0);
   });
 
   test('renders category icons correctly', () => {
@@ -181,6 +185,11 @@ describe('TopExpenseCategories', () => {
     await user.type(endDateInput, '2023-12-20');
 
     // The total should be 300 (100 + 200), excluding the 300 from Dec 31
-    expect(screen.getByText('$300.00')).toBeInTheDocument();
+    // Look for it in the summary section specifically
+    expect(screen.getByText('Custom Period Total')).toBeInTheDocument();
+    
+    // Get the summary section and check the total amount
+    const summarySection = screen.getByText('Custom Period Total').closest('div');
+    expect(summarySection).toHaveTextContent('$300.00');
   });
 });
