@@ -31,6 +31,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       description: '',
       category: 'Other',
       date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+      vendor: '', // Optional vendor field
     }
   );
 
@@ -73,6 +74,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           description: '',
           category: 'Other',
           date: new Date().toISOString().split('T')[0],
+          vendor: '',
         });
       }
     } catch (error) {
@@ -139,6 +141,23 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           {errors.description && (
             <p className="mt-1 text-sm text-red-600">{errors.description}</p>
           )}
+        </div>
+
+        <div>
+          <label htmlFor="vendor" className="block text-sm font-medium text-gray-700 mb-1">
+            Vendor <span className="text-gray-500 text-xs">(optional)</span>
+          </label>
+          <input
+            type="text"
+            id="vendor"
+            value={formData.vendor || ''}
+            onChange={(e) => handleInputChange('vendor', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter vendor name (e.g., McDonald&apos;s, Shell, Amazon)"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            If not provided, we&apos;ll try to extract the vendor from the description
+          </p>
         </div>
 
         <div>

@@ -12,6 +12,7 @@ export interface Expense {
   description: string;
   category: ExpenseCategory;
   date: string; // ISO string format
+  vendor?: string; // Optional vendor field - used when available, falls back to description extraction
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +22,7 @@ export interface ExpenseFormData {
   description: string;
   category: ExpenseCategory;
   date: string;
+  vendor?: string; // Optional vendor field for form input
 }
 
 export interface ExpenseFilters {

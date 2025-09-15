@@ -7,3 +7,10 @@ export type {
 } from './expense';
 
 export type { TopExpenseCategory } from '../lib/utils';
+
+export type {
+  Vendor,
+  VendorSummary,
+  VendorFilters,
+  VendorChartData,
+} from './vendor';

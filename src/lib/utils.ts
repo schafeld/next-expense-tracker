@@ -251,3 +251,14 @@ export const calculateTopExpenseCategoriesWithTimeRange = (
 
   return calculateTopExpenseCategories(filteredExpenses, limit);
 };
+
+// Re-export vendor utilities for convenience
+export {
+  extractVendorName,
+  groupExpensesByVendor,
+  filterVendors,
+  calculateVendorSummary,
+  generateVendorChartData,
+  getVendorTrends,
+  exportVendorsToCSV,
+} from './vendorUtils';

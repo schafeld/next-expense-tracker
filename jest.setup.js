@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 
 // Mock jsPDF to avoid issues in test environment
 jest.mock('jspdf', () => {
