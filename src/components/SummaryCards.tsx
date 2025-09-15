@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Expense, ExpenseSummary } from '@/types';
 import { formatCurrency, calculateMonthlySpent, getAvailableMonths } from '@/lib/utils';
 
@@ -15,25 +15,24 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({
   expenses,
   isLoading = false
 }) => {
-  const now = new Date();
-  const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
-  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const now = useMemo(() => new Date(), []);
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+
+  // Handle cases where selectedMonth/Year might be null during initialization
+  const currentMonth = selectedMonth ?? now.getMonth();
+  const currentYear = selectedYear ?? now.getFullYear();
 
   const availableMonths = getAvailableMonths(expenses);
   const currentSelectedIndex = availableMonths.findIndex(
-    m => m.month === selectedMonth && m.year === selectedYear
-  );
-
-  const selectedMonthlySpent = calculateMonthlySpent(expenses, selectedMonth, selectedYear);
-  const selectedMonthName = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(
-    new Date(selectedYear, selectedMonth)
+    m => m.month === currentMonth && m.year === currentYear
   );
 
   const canNavigatePrev = currentSelectedIndex < availableMonths.length - 1;
   const canNavigateNext = currentSelectedIndex > 0;
 
   const handlePrevMonth = () => {
-    if (canNavigatePrev) {
+    if (canNavigatePrev && currentSelectedIndex >= 0) {
       const prevMonth = availableMonths[currentSelectedIndex + 1];
       setSelectedMonth(prevMonth.month);
       setSelectedYear(prevMonth.year);
@@ -41,7 +40,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({
   };
 
   const handleNextMonth = () => {
-    if (canNavigateNext) {
+    if (canNavigateNext && currentSelectedIndex >= 0) {
       const nextMonth = availableMonths[currentSelectedIndex - 1];
       setSelectedMonth(nextMonth.month);
       setSelectedYear(nextMonth.year);
@@ -49,21 +48,29 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({
   };
 
   useEffect(() => {
-    if (availableMonths.length > 0) {
+    if (availableMonths.length > 0 && (selectedMonth === null || selectedYear === null)) {
+      // First try to find current month in available months
       const currentMonth = availableMonths.find(
         m => m.month === now.getMonth() && m.year === now.getFullYear()
       );
+
       if (currentMonth) {
         setSelectedMonth(currentMonth.month);
         setSelectedYear(currentMonth.year);
       } else {
+        // Default to the most recent month (first in the sorted array)
         setSelectedMonth(availableMonths[0].month);
         setSelectedYear(availableMonths[0].year);
       }
     }
-  }, [expenses]);
+  }, [availableMonths, now, selectedMonth, selectedYear]);
 
-  const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
+  const selectedMonthlySpent = calculateMonthlySpent(expenses, currentMonth, currentYear);
+  const selectedMonthName = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(
+    new Date(currentYear, currentMonth)
+  );
+
+  const isCurrentMonth = currentMonth === now.getMonth() && currentYear === now.getFullYear();
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
